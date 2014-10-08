@@ -1,0 +1,53 @@
+---
+title: Paintr
+---
+<h1>Paintr</h1>
+<canvas id="paint-canvas" width="750" height="300"></canvas>
+<div id="paint-editor">
+  <div class="group">
+    <h2>Tools</h2>
+    <ul class="tools">
+      <li>
+        <label>
+          <input type="radio" name="tool" value="brush" checked>
+          <span>(B)</span>
+        </label>
+      </li>
+      <li>
+        <label>
+          <input type="radio" name="tool" value="erase">
+          <span>(E)</span>
+        </label>
+      </li>
+      <li>
+        <label>
+          <input type="radio" name="tool" value="sample">
+          <span>(S)</span>
+        </label>
+      </li>
+    </ul>
+  </div>
+  <div class="group">
+    <h2>Options</h2>
+    <ul class="options">
+      <li>
+        <label>
+          <input id="paint-edit-color" type="color">
+          <span>Brush Color</span>
+        </label>
+      </li>
+      <li>
+        <label>
+          <input id="paint-edit-size" type="number" value="5">
+          <span>Brush Size</span>
+        </label>
+      </li>
+    </ul>
+  </div>
+  <div class="group">
+    <h2>History</h2>
+    <ul class="history" id="history">
+      <!--li class="brush"><a href="#">brush</a></li-->
+    </ul>
+  </div>
+</div>

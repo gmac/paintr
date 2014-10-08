@@ -1,0 +1,126 @@
+//= require "normalize"
+
+@charset "utf-8";
+
+body {
+  background: #d4d4d4 image-url("background.png");
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+.container {
+  margin: 0 auto;
+  width: 750px;
+}
+
+#paint-editor {
+  overflow: hidden;
+  margin-bottom: 75px;
+}
+
+canvas {
+  background-color: white;
+}
+
+.group {
+  float: left;
+  width: 33%;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    margin-bottom: 10px;
+  }
+
+  label {
+    font-family: monospace;
+  }
+}
+
+.tools {
+  input[type="radio"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: none;
+    background-color: #bbb;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 1px solid #999;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+    height: 25px;
+    outline: none;
+    vertical-align: middle;
+    width: 25px;
+
+    &:checked {
+      background-color: white;
+    }
+
+    &[value="brush"] {
+      background-image: image-url("cursor-brush.png");
+    }
+
+    &[value="erase"] {
+      background-image: image-url("cursor-erase.png");
+    }
+
+    &[value="sample"] {
+      background-image: image-url("cursor-sample.png");
+    }
+  }
+}
+
+.options {
+  input,
+  input {
+    width: 50px;
+  }
+}
+
+.history {
+  li {
+    border-bottom: 1px solid #ccc;
+    margin: 0;
+
+    &:first-child {
+      border-top: 1px solid #ccc;
+    }
+  }
+
+  a {
+    background-color: #eee;
+    background-position: 8px center;
+    background-repeat: no-repeat;
+    color: black;
+    display: block;
+    padding: 5px 10px;
+    padding-left: 30px;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .brush a {
+    background-image: image-url("cursor-brush.png");
+  }
+
+  .erase a {
+    background-image: image-url("cursor-erase.png");
+  }
+
+  .sample a {
+    background-image: image-url("cursor-sample.png");
+  }
+
+  .active a {
+    background-color: white;
+  }
+}
