@@ -7,6 +7,9 @@ A simple canvas-based paint app. Features include:
 - Version history.
 - Keyboard shortcuts.
 
+![Paintr](screenshot.jpg)
+
+
 This app is an excercise in thinking about the components that manage a data-driven application. Intended for instructional use.
 
 ## Setup
