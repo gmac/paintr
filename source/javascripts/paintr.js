@@ -11,12 +11,9 @@ var PaintHistoryModel = Backbone.Model.extend({
   canvas: null,
   defaults: {
     active: true,
-    version: 0,
-    tool: ''
-  },
-
-  initialize: function() {
-    this.canvas = document.createElement('canvas');
+    data: '',
+    tool: '',
+    version: 0
   }
 });
 
@@ -40,22 +37,35 @@ var PaintHistory = Backbone.Collection.extend({
   },
 
   getCurrentVersion: function() {
-    var version = 0;
+    var current = null;
     this.each(function(model) {
       if (model.get('active')) {
-        version = Math.max(version, model.get('version'));
+        if (!current || model.get('version') > current.get('version')) {
+          current = model;
+        }
       }
     });
 
-    return version;
+    return current;
   },
 
-  record: function(canvas, tool) {
+  getCurrentVersionData: function() {
+    var current = this.getCurrentVersion();
+    return (current && current.get('data')) || '';
+  },
+
+  getCurrentVersionNumber: function() {
+    var current = this.getCurrentVersion();
+    return (current && current.get('version')) || 0;
+  },
+
+  record: function(data, tool) {
     this.expireOldVersions();
     this.add({
       active: true,
-      version: this.getCurrentVersion() + 1,
-      tool: tool
+      data: data,
+      tool: tool,
+      version: this.getCurrentVersionNumber() + 1
     });
   },
 
@@ -74,12 +84,26 @@ var PaintCanvasView = Backbone.View.extend({
   el: '#paint-canvas',
 
   initialize: function() {
+    // Initialize history image data buffer:
+    this.buffer = new Image();
+    this.buffer.onload = _.bind(function() {
+      var ctx = this.el.getContext('2d');
+      ctx.clearRect(0, 0, this.el.width, this.el.height);
+      ctx.drawImage(this.buffer, 0, 0);
+    }, this);
+
+    // Listen for changes to the current tool:
     this.listenTo(this.model, 'change:tool', this.render);
+    this.listenTo(this.collection, 'change:active', this.renderHistory);
     this.render();
   },
 
   render: function() {
     this.$el.css('cursor', 'url(images/cursor-'+this.model.get('tool')+'.png),auto');
+  },
+
+  renderHistory: function() {
+    this.buffer.src = this.collection.getCurrentVersionData();
   },
 
   applyTool: function(x, y) {
@@ -119,7 +143,7 @@ var PaintCanvasView = Backbone.View.extend({
       .on('mouseup.drag', function(evt) {
         update(evt);
         $doc.off('mousemove.drag mouseup.drag');
-        if (tool !== 'sample') self.collection.record(self.el, tool);
+        if (tool !== 'sample') self.collection.record(self.el.toDataURL(), tool);
       });
 
     update(evt);
