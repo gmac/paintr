@@ -1,11 +1,12 @@
-paintr.views.CanvasView = Backbone.View.extend({
-  el: '#paint-canvas',
+var PaintrCanvasView = Backbone.View.extend({
+  el: '#paintr-canvas',
 
   initialize: function() {
     // Initialize history image data buffer:
     this.buffer = new Image();
     this.buffer.onload = _.bind(function() {
       var ctx = this.el.getContext('2d');
+      ctx.globalCompositeOperation = 'source-over';
       ctx.clearRect(0, 0, this.el.width, this.el.height);
       ctx.drawImage(this.buffer, 0, 0);
     }, this);

@@ -1,5 +1,5 @@
-paintr.views.EditorView = Backbone.View.extend({
-  el: '#paint-editor',
+var PaintrEditorView = Backbone.View.extend({
+  el: '#paintr-editor',
 
   initialize: function() {
     this.listenTo(this.model, 'change', this.render);
@@ -46,6 +46,6 @@ paintr.views.EditorView = Backbone.View.extend({
   onHistory: function(evt) {
     evt.preventDefault();
     var $li = this.$(evt.target).closest('li');
-    this.collection.activate($li.data('version'));
+    this.collection.setVersion($li.data('version'));
   }
 });

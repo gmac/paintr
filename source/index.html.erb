@@ -2,8 +2,8 @@
 title: Paintr
 ---
 <h1>Paintr</h1>
-<canvas id="paint-canvas" width="750" height="300"></canvas>
-<div id="paint-editor">
+<canvas id="paintr-canvas" width="750" height="300"></canvas>
+<div id="paintr-editor">
   <div class="group">
     <h2>Tools</h2>
     <ul class="tools">
@@ -39,13 +39,13 @@ title: Paintr
       <li>
         <label>
           <input id="paint-edit-size" type="number" value="5">
-          <span>Brush Size</span>
+          <span>Brush Size (+/-)</span>
         </label>
       </li>
     </ul>
   </div>
   <div class="group">
-    <h2>History</h2>
+    <h2>History <label>(Ctrl+Z)</label></h2>
     <ul class="history" id="history">
       <!--li class="brush"><a href="#">brush</a></li-->
     </ul>
