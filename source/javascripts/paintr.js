@@ -18,34 +18,22 @@ var PaintHistoryModel = Backbone.Model.extend({
 });
 
 var PaintHistory = Backbone.Collection.extend({
-  max: 5,
+  maxVersions: 5,
   comparator: 'version',
 
-  expireOldVersions: function() {
-    // Find all inactive versions:
-    var expire = this.where({active: false});
-
-    // Check if we'll still be at max count after removing inactive versions:
-    // If so, grab the first (oldest) version record as an expiration.
-    if (this.length - expire.length >= this.max) {
-      expire.push(this.at(0));
-    }
-
-    // Silently remove all expirations:
-    this.remove(expire);
-    return expire[0];
+  getVersion: function(version) {
+    return this.findWhere({version: version});
   },
 
   getCurrentVersion: function() {
+    var version = 0;
     var current = null;
     this.each(function(model) {
-      if (model.get('active')) {
-        if (!current || model.get('version') > current.get('version')) {
-          current = model;
-        }
+      if (model.get('active') && model.get('version') >= version) {
+        version = model.get('version');
+        current = model;
       }
     });
-
     return current;
   },
 
@@ -60,7 +48,19 @@ var PaintHistory = Backbone.Collection.extend({
   },
 
   record: function(data, tool) {
-    this.expireOldVersions();
+    // Find all inactive versions:
+    var expire = this.where({active: false});
+
+    // Check if we'll still be at max count after removing inactive versions:
+    // If so, grab the first (oldest) version record as an expiration.
+    if (this.length - expire.length >= this.maxVersions) {
+      expire.push(this.at(0));
+    }
+
+    // Remove all expirations:
+    this.remove(expire);
+
+    // Add new version history:
     this.add({
       active: true,
       data: data,
@@ -69,12 +69,20 @@ var PaintHistory = Backbone.Collection.extend({
     });
   },
 
-  activate: function(version) {
+  setVersion: function(version) {
     version = parseInt(version, 10);
     this.each(function(model) {
       model.set({active: model.get('version') <= version}, {silent: true});
     });
     this.trigger('change:active');
+  },
+
+  undo: function() {
+
+  },
+
+  redo: function() {
+    
   }
 });
 
@@ -88,6 +96,7 @@ var PaintCanvasView = Backbone.View.extend({
     this.buffer = new Image();
     this.buffer.onload = _.bind(function() {
       var ctx = this.el.getContext('2d');
+      ctx.globalCompositeOperation = 'source-over';
       ctx.clearRect(0, 0, this.el.width, this.el.height);
       ctx.drawImage(this.buffer, 0, 0);
     }, this);
@@ -200,18 +209,21 @@ var PaintEditView = Backbone.View.extend({
   onHistory: function(evt) {
     evt.preventDefault();
     var $li = this.$(evt.target).closest('li');
-    this.collection.activate($li.data('version'));
+    this.collection.setVersion($li.data('version'));
   }
 });
 
 function PainerController(options) {
   this.model = options.model;
+  this.collection = options.collection;
 
   $(document).on('keydown', _.bind(function(evt) {
-    switch(evt.keyCode) {
-      case 66: return this.model.set({tool: 'brush'});
-      case 69: return this.model.set({tool: 'erase'});
-      case 83: return this.model.set({tool: 'sample'});
+    switch (evt.keyCode) {
+      case 66: return this.model.set({tool: 'brush'}); // B
+      case 69: return this.model.set({tool: 'erase'}); // E
+      case 83: return this.model.set({tool: 'sample'}); // S
+      case 89: if (evt.ctrlKey) return this.collection.redo(); // Ctrl+Y
+      case 90: if (evt.ctrlKey) return this.collection.undo(); // Ctrl+Z
     }
   }, this));
 }
